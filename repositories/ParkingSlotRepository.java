@@ -10,6 +10,10 @@ public class ParkingSlotRepository {
 
     private static int id;
 
+    public Map<Integer, ParkingSlot> getParkingslotMap() {
+        return parkingslotMap;
+    }
+
     public ParkingSlotRepository() {
         this.parkingslotMap = new HashMap<>();
         this.id = 0;

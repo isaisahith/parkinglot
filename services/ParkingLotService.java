@@ -1,6 +1,7 @@
 package services;
 
 import exceptions.ParkingLotNotFoundException;
+import models.Gate;
 import models.ParkingFloor;
 import models.ParkingLot;
 import models.constants.VehicleType;
@@ -32,12 +33,12 @@ public class ParkingLotService {
 
     }
 
-    public ParkingLot create(int id, String name, String address, int noOfFloors, int noOfEntryGates, int noOfExitGates) {
+    public ParkingLot create(int id, String name, String address,int noOfFloors, List<Gate> gates) {
         ParkingLot parkingLot = new ParkingLot();
         parkingLot.setId(id);
         parkingLot.setName(name);
         parkingLot.setAddress(address);
-
+        parkingLot.setGates(gates);
         List<ParkingFloor> parkingFloorList = new ArrayList<>();
         int count=0;
         for(int i=0; i<noOfFloors/2; i++) {
@@ -65,9 +66,12 @@ public class ParkingLotService {
     }
 
 
-    public void printParkingLot(ParkingLot parkingLot) throws ParkingLotNotFoundException {
+    public void printParkingLot(int id) throws ParkingLotNotFoundException {
 
-
+        if(parkingLotRepository.getParkingLot(id)==null){
+            throw new ParkingLotNotFoundException();
+        }
+        ParkingLot parkingLot = parkingLotRepository.getParkingLot(id);
         List<ParkingFloor> parkingFloors = parkingLot.getParkingFloors();
 
         for(ParkingFloor floor : parkingFloors) {

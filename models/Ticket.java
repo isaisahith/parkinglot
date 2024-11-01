@@ -6,7 +6,7 @@ public class Ticket {
     private int id;
     private Vehicle vehicle;
     private  ParkingSlot parkingSlot;
-    private Gate entryDate;
+    private Gate entryGate;
     private Date entryTime;
     private Operator operator;
 
@@ -31,7 +31,7 @@ public class Ticket {
     }
 
     public Gate getEntryDate() {
-        return entryDate;
+        return entryGate;
     }
 
     public void setId(int id) {
@@ -43,7 +43,7 @@ public class Ticket {
     }
 
     public void setEntryDate(Gate entryDate) {
-        this.entryDate = entryDate;
+        this.entryGate = entryDate;
     }
 
     public void setEntryTime(Date entryTime) {

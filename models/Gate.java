@@ -5,6 +5,11 @@ public class Gate {
     private GateType gateType;
     private Operator operator;
 
+    public Gate(GateType gateType, Operator operator) {
+        this.gateType = gateType;
+        this.operator = operator;
+    }
+
 
     public int getId() {
         return id;

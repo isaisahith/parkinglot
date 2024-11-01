@@ -11,7 +11,15 @@ public class ParkingLot {
     private String address;
     private List<ParkingFloor> parkingFloors;
     private List<Gate> gates;
+    private List<Operator> operators;
 
+    public List<Operator> getOperators() {
+        return operators;
+    }
+
+    public void setOperators(List<Operator> operators) {
+        this.operators = operators;
+    }
 
     public int getId() {
         return id;

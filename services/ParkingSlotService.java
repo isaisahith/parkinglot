@@ -30,4 +30,15 @@ public class ParkingSlotService {
         System.out.print(parkingSlot.getParkingSlotNumber()+ "-" + parkingSlot.getParkingSpotStatus().toString().charAt(0)+" "+ parkingSlot.getVehicleType().toString().charAt(0)+" | ");
 
     }
+
+    public ParkingSlot assignSlot(Vehicle vehicle){
+
+        for(ParkingSlot parkingSlot: parkingSlotRepository.getParkingslotMap().values()){
+            if(parkingSlot.getVehicleType().equals(vehicle.getVehicleType())){
+                return parkingSlot;
+            }
+        }
+
+        return null;
+    }
 }
