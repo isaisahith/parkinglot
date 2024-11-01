@@ -24,7 +24,7 @@ public class ParkingFloorService {
         List<ParkingSlot> parkingSlots = new ArrayList<ParkingSlot>();
 
         for(int i=0; i<noOfSlots; i++) {
-            parkingSlots.add(parkingSlotService.createParkingSlot(floorNumber*100+i, ParkingSpotType.NORMAL, vehicleType));
+            parkingSlots.add(parkingSlotService.createParkingSlot(floorNumber*100+i, ParkingSpotType.NORMAL, vehicleType, parkingFloor));
         }
 
         parkingFloor.setParkingSlots(parkingSlots);

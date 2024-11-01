@@ -1,5 +1,6 @@
 package services;
 
+import models.ParkingFloor;
 import models.ParkingSlot;
 import models.Vehicle;
 import models.constants.ParkingSpotStatus;
@@ -15,12 +16,14 @@ public class ParkingSlotService {
         this.parkingSlotRepository = parkingSlotRepository;
     }
 
-    public ParkingSlot createParkingSlot(int id, ParkingSpotType parkingSpotType, VehicleType vehicleType) {
+    public ParkingSlot createParkingSlot(int id, ParkingSpotType parkingSpotType, VehicleType vehicleType, ParkingFloor parkingFloor) {
         ParkingSlot parkingSlot = new ParkingSlot();
         parkingSlot.setParkingSlotNumber(id);
         parkingSlot.setParkingSpotStatus(ParkingSpotStatus.EMPTY);
         parkingSlot.setParkingSpotType(parkingSpotType);
         parkingSlot.setVehicleType(vehicleType);
+        parkingSlot.setParkingFloorNumber(parkingFloor);
+
 
         parkingSlotRepository.save(parkingSlot);
         return parkingSlot;

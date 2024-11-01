@@ -8,6 +8,15 @@ public class ParkingSlot {
     private ParkingSpotStatus parkingSpotStatus;
     private  ParkingSpotType parkingSpotType;
     private VehicleType vehicleType;
+    private ParkingFloor parkingFloorNumber;
+
+    public ParkingFloor getParkingFloorNumber() {
+        return parkingFloorNumber;
+    }
+
+    public void setParkingFloorNumber(ParkingFloor parkingFloorNumber) {
+        this.parkingFloorNumber = parkingFloorNumber;
+    }
 
     public VehicleType getVehicleType() {
         return vehicleType;

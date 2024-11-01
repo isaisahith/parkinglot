@@ -41,16 +41,20 @@ public class ParkingLotService {
         parkingLot.setGates(gates);
         List<ParkingFloor> parkingFloorList = new ArrayList<>();
         int count=0;
-        for(int i=0; i<noOfFloors/2; i++) {
+        for(int i=0; i<noOfFloors; i++) {
             count++;
-            ParkingFloor floor = parkingFloorService.createParkingFloor(i, 10, VehicleType.TWO_WHEELER);
+            VehicleType vehicleType;
+
+            if(count<=noOfFloors/2){
+                vehicleType = VehicleType.TWO_WHEELER;
+            }else{
+                vehicleType = VehicleType.FOUR_WHEELER;
+            }
+            ParkingFloor floor = parkingFloorService.createParkingFloor(i, 10, vehicleType);
             parkingFloorList.add(floor);
         }
 
-        for(int i=count; i<noOfFloors;i++){
-            ParkingFloor floor = parkingFloorService.createParkingFloor(noOfFloors-1, 10, VehicleType.FOUR_WHEELER);
-            parkingFloorList.add(floor);
-        }
+
 
 
 

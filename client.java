@@ -1,12 +1,13 @@
+import BillCalculatingStrategies.BillCalculatingStrategy;
+import BillCalculatingStrategies.RegularStrategy;
+import controllers.BillController;
 import controllers.ParkingLotController;
 import controllers.TicketController;
 import dto.TicketReponseDto;
 import dto.TicketRequestDto;
-import models.Gate;
-import models.Operator;
-import models.ParkingLot;
-import models.Ticket;
+import models.*;
 import models.constants.GateType;
+import models.constants.ParkingSpotStatus;
 import models.constants.ResponseStatus;
 import models.constants.VehicleType;
 import repositories.*;
@@ -40,7 +41,10 @@ public class client {
         ParkingFloorService parkingFloorService = new ParkingFloorService(parkingFloorRepository, parkingSlotService);
         TicketService ticketService = new TicketService(ticketRepository, parkingSlotService);
         TicketController ticketController = new TicketController(ticketService, gateRepository, operatorRepository);
-
+        BillCalculatingStrategy billCalculatingStrategy = new RegularStrategy();
+        BillRepository billRepository = new BillRepository();
+        BillService billService = new BillService(billRepository, billCalculatingStrategy);
+        BillController billController = new BillController(billService);
 
         ParkingLotService parkingLotService = new ParkingLotService(parkingLotRepository,
                 parkingFloorService);
@@ -73,42 +77,69 @@ public class client {
 
             Scanner scanner = new Scanner(System.in);
 
+
+
             while(true){
-                parkingLotController.printParkingLot(0);
-                System.out.println("Enter vehicle number: ");
-                String vehicleNumber = scanner.nextLine();
-                System.out.println("Enter '2' for Two wheeler '4' for four wheeler");
-                int vType = Integer.parseInt(scanner.nextLine());
-                VehicleType vehicleType;
-                if(vType == 2){
-                    vehicleType = VehicleType.TWO_WHEELER;
+                System.out.print("Enter 1 to issue ticket and 2 to generate the bill :");
+                int instruction = scanner.nextInt();
+                if(instruction == 1){
+                    parkingLotController.printParkingLot(0);
+                    System.out.println("Enter vehicle number: ");
+                    Scanner sc = new Scanner(System.in);
+                    String vehicleNumber = sc.nextLine();
+                    System.out.println("Enter '2' for Two wheeler '4' for four wheeler");
+                    int vType = Integer.parseInt(sc.nextLine());
+                    VehicleType vehicleType;
+                    if(vType == 2){
+                        vehicleType = VehicleType.TWO_WHEELER;
+                    }else{
+                        vehicleType = VehicleType.FOUR_WHEELER;
+                    }
+                    Scanner sc1 = new Scanner(System.in);
+
+                    System.out.println("Enter owner name: ");
+                    String owner = sc1.nextLine();
+
+                    TicketRequestDto ticketRequestDto1 = new TicketRequestDto(vehicleType,
+                            vehicleNumber, owner,0,0);
+
+                    TicketReponseDto ticketResposeDto1 = ticketController.issueTicket(ticketRequestDto1);
+
+                    if(ticketResposeDto1.getResponseStatus().equals(ResponseStatus.FAILURE)){
+                        System.out.println("Ticket is not issued");
+                    }else{
+                        System.out.println("-----------------------------------------------------------------------------");
+                        Ticket ticket = ticketResposeDto1.getTicket();
+                        System.out.println("Ticket Id: "+ticket.getId());
+                        System.out.println("Slot Number: +"+ticket.getParkingSlot().getParkingSlotNumber());
+                        System.out.println("VehicleNumber: "+ticket.getVehicle().getVehicleNumber());
+                        System.out.println("EntryTime: "+ticket.getEntryTime());
+                        System.out.println("Operator: "+ticket.getOperator().getName());
+                        System.out.println("Entry gate: "+ticket.getEntryDate().getId());
+                        System.out.println("Floor number: "+ticket.getParkingSlot().getParkingFloorNumber().getFloorNumber());
+                        System.out.println("-----------------------------------------------------------------------------");
+                    }
+
+//                    System.out.println("Press any key to issue new ticket");
+//                    String str = scanner.nextLine();
+
                 }else{
-                    vehicleType = VehicleType.FOUR_WHEELER;
-                }
-                System.out.println("Enter owner name: ");
-                String owner = scanner.nextLine();
+                    System.out.println("Enter the ticket Id to generate the bill: ");
+                    int ticketNumber = scanner.nextInt();
 
-                TicketRequestDto ticketRequestDto1 = new TicketRequestDto(vehicleType,
-                        vehicleNumber, owner,0,0);
-
-                TicketReponseDto ticketResposeDto1 = ticketController.issueTicket(ticketRequestDto1);
-
-                if(ticketResposeDto1.getResponseStatus().equals(ResponseStatus.FAILURE)){
-                    System.out.println("Ticket is not issued");
-                }else{
-                    System.out.println("-----------------------------------------------------------------------------");
-                    Ticket ticket = ticketResposeDto1.getTicket();
+                    Ticket ticket = ticketRepository.getTicket(ticketNumber);
+                    Bill bill = billController.getBill(ticket);
+                    System.out.println("Ticket Id: "+ticket.getId());
                     System.out.println("Slot Number: +"+ticket.getParkingSlot().getParkingSlotNumber());
                     System.out.println("VehicleNumber: "+ticket.getVehicle().getVehicleNumber());
                     System.out.println("EntryTime: "+ticket.getEntryTime());
-                    System.out.println("Operator: "+ticket.getOperator().getName());
-                    System.out.println("Entry gate: "+ticket.getEntryDate().getId());
-                    System.out.println("-----------------------------------------------------------------------------");
+                    System.out.println("ExitTime: "+bill.getExitDate());
+                    System.out.println("Amount: "+bill.getAmount());
+                    System.out.println("Press any key once the payment is done");
+                    Scanner sc = new Scanner(System.in);
+                    String s = sc.nextLine();
+                    ticket.getParkingSlot().setParkingSpotStatus(ParkingSpotStatus.EMPTY);
                 }
-
-                System.out.println("Press any key to issue new ticket");
-                String str = scanner.nextLine();
-
             }
 
         }catch (Exception e){
