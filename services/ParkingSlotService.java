@@ -34,7 +34,7 @@ public class ParkingSlotService {
     public ParkingSlot assignSlot(Vehicle vehicle){
 
         for(ParkingSlot parkingSlot: parkingSlotRepository.getParkingslotMap().values()){
-            if(parkingSlot.getVehicleType().equals(vehicle.getVehicleType())){
+            if(parkingSlot.getVehicleType().equals(vehicle.getVehicleType())&& parkingSlot.getParkingSpotStatus().equals(ParkingSpotStatus.EMPTY)){
                 return parkingSlot;
             }
         }

@@ -47,7 +47,7 @@ public class ParkingLotService {
             parkingFloorList.add(floor);
         }
 
-        for(int i=0; i<noOfFloors-count;i++){
+        for(int i=count; i<noOfFloors;i++){
             ParkingFloor floor = parkingFloorService.createParkingFloor(noOfFloors-1, 10, VehicleType.FOUR_WHEELER);
             parkingFloorList.add(floor);
         }
