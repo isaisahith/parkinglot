@@ -7,6 +7,15 @@ public class ParkingSlot {
     private int parkingSlotNumber;
     private ParkingSpotStatus parkingSpotStatus;
     private  ParkingSpotType parkingSpotType;
+    private VehicleType vehicleType;
+
+    public VehicleType getVehicleType() {
+        return vehicleType;
+    }
+
+    public void setVehicleType(VehicleType vehicleType) {
+        this.vehicleType = vehicleType;
+    }
 
     public int getParkingSlotNumber() {
         return parkingSlotNumber;

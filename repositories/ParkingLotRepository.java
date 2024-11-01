@@ -7,8 +7,8 @@ public class ParkingLotRepository {
 
     private static int id;
 
-    public ParkingLotRepository(Map<Integer, ParkingLot> parkingLotMap) {
-        this.parkingLotMap = parkingLotMap;
+    public ParkingLotRepository() {
+        this.parkingLotMap = new HashMap<>();
         this.id = 0;
     }
 
