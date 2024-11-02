@@ -10,7 +10,32 @@ public class Bill {
     private Ticket ticket;
     private int amount;
     private Gate exitGate;
+    private int amountTobepaid;
+    private Invoice invoice;
 
+    public Invoice getInvoice() {
+        return invoice;
+    }
+
+    public void setInvoice(Invoice invoice) {
+        this.invoice = invoice;
+    }
+
+    public Gate getExitGate() {
+        return exitGate;
+    }
+
+    public void setExitGate(Gate exitGate) {
+        this.exitGate = exitGate;
+    }
+
+    public int getAmountTobepaid() {
+        return amountTobepaid;
+    }
+
+    public void setAmountTobepaid(int amountTobepaid) {
+        this.amountTobepaid = amountTobepaid;
+    }
 
     public int getAmount() {
         return amount;

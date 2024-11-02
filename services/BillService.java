@@ -22,7 +22,9 @@ public class BillService {
         bill.setExitDate(new Date());
         bill.setParkingSlot(ticket.getParkingSlot());
         bill.setVehicle(ticket.getVehicle());
-        bill.setAmount(billCalculatingStrategy.getBillAmount(bill));
+        int billAmount = billCalculatingStrategy.getBillAmount(bill);
+        bill.setAmount(billAmount);
+        bill.setAmountTobepaid(billAmount);
         return bill;
     }
 }

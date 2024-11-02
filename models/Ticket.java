@@ -9,6 +9,15 @@ public class Ticket {
     private Gate entryGate;
     private Date entryTime;
     private Operator operator;
+    private Bill bill;
+
+    public Bill getBill() {
+        return bill;
+    }
+
+    public void setBill(Bill bill) {
+        this.bill = bill;
+    }
 
     public Operator getOperator() {
         return operator;

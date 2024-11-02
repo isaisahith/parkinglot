@@ -2,10 +2,11 @@ package models;
 
 
 import java.util.Date;
+import java.util.List;
 
 public class Invoice {
     private int id;
-    private Payment payment;
+    private List<Payment> payments;
     private Ticket ticket;
     private Date exitTime;
     private double amount;
@@ -18,9 +19,7 @@ public class Invoice {
         return id;
     }
 
-    public Payment getPayment() {
-        return payment;
-    }
+
 
     public Date getExitTime() {
         return exitTime;
@@ -38,9 +37,7 @@ public class Invoice {
         this.ticket = ticket;
     }
 
-    public void setPayment(Payment payment) {
-        this.payment = payment;
-    }
+
 
     public void setAmount(double amount) {
         this.amount = amount;
@@ -48,5 +45,13 @@ public class Invoice {
 
     public void setExitTime(Date exitTime) {
         this.exitTime = exitTime;
+    }
+
+    public List<Payment> getPayments() {
+        return payments;
+    }
+
+    public void setPayments(List<Payment> payments) {
+        this.payments = payments;
     }
 }

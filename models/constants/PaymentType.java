@@ -1,5 +1,5 @@
 package models.constants;
 
 public enum PaymentType {
-    ONLINE, CASH
+    ONLINE, CASH, COUPON
 }

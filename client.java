@@ -3,16 +3,17 @@ import BillCalculatingStrategies.RegularStrategy;
 import controllers.BillController;
 import controllers.ParkingLotController;
 import controllers.TicketController;
+import dto.BillRequestDto;
+import dto.BillResponseDto;
 import dto.TicketReponseDto;
 import dto.TicketRequestDto;
 import models.*;
-import models.constants.GateType;
-import models.constants.ParkingSpotStatus;
-import models.constants.ResponseStatus;
-import models.constants.VehicleType;
+import models.constants.*;
 import repositories.*;
 import services.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class client {
@@ -23,6 +24,8 @@ public class client {
         GateRepository gateRepository = new GateRepository();
         TicketRepository ticketRepository = new TicketRepository();
         OperatorRepository operatorRepository = new OperatorRepository();
+        PaymentRepository paymentRepository = new PaymentRepository();
+        InvoiceRepository invoiceRepository = new InvoiceRepository();
 
 
 
@@ -44,7 +47,7 @@ public class client {
         BillCalculatingStrategy billCalculatingStrategy = new RegularStrategy();
         BillRepository billRepository = new BillRepository();
         BillService billService = new BillService(billRepository, billCalculatingStrategy);
-        BillController billController = new BillController(billService);
+        BillController billController = new BillController(billService, ticketRepository);
 
         ParkingLotService parkingLotService = new ParkingLotService(parkingLotRepository,
                 parkingFloorService);
@@ -127,18 +130,97 @@ public class client {
                     System.out.println("Enter the ticket Id to generate the bill: ");
                     int ticketNumber = scanner.nextInt();
 
-                    Ticket ticket = ticketRepository.getTicket(ticketNumber);
-                    Bill bill = billController.getBill(ticket);
-                    System.out.println("Ticket Id: "+ticket.getId());
-                    System.out.println("Slot Number: +"+ticket.getParkingSlot().getParkingSlotNumber());
-                    System.out.println("VehicleNumber: "+ticket.getVehicle().getVehicleNumber());
-                    System.out.println("EntryTime: "+ticket.getEntryTime());
-                    System.out.println("ExitTime: "+bill.getExitDate());
-                    System.out.println("Amount: "+bill.getAmount());
-                    System.out.println("Press any key once the payment is done");
-                    Scanner sc = new Scanner(System.in);
-                    String s = sc.nextLine();
-                    ticket.getParkingSlot().setParkingSpotStatus(ParkingSpotStatus.EMPTY);
+                    BillRequestDto billRequestDto = new BillRequestDto();
+                    billRequestDto.setTicketId(ticketNumber);
+                    BillResponseDto billResponseDto = billController.getBill(billRequestDto);
+                    if(billResponseDto.getStatus().equals(ResponseStatus.SUCCESS)){
+                        Bill bill = billResponseDto.getBill();
+                        if(bill.getAmountTobepaid()==0){
+                            System.out.println("Total amount is already paid!!");
+                            continue;
+                        }
+                        Ticket ticket = bill.getTicket();
+                        System.out.println("------------------------------------------------------------------------------------------");
+                        System.out.println("Ticket Id: "+ticket.getId());
+                        System.out.println("Slot Number: +"+ticket.getParkingSlot().getParkingSlotNumber());
+                        System.out.println("VehicleNumber: "+ticket.getVehicle().getVehicleNumber());
+                        System.out.println("EntryTime: "+ticket.getEntryTime());
+                        System.out.println("ExitTime: "+bill.getExitDate());
+                        System.out.println("Total bill amount: "+bill.getAmount());
+                        System.out.println("Total amount to be paid: "+bill.getAmountTobepaid());
+                        System.out.println("------------------------------------------------------------------------------------------");
+                        System.out.println("Enter number of payments: ");
+                        Scanner sc = new Scanner(System.in);
+                        int noOfPayments= sc.nextInt();
+                        Invoice invoice;
+                        List<Payment> paymentList;
+                        if(bill.getInvoice()!=null){
+                            invoice = bill.getInvoice();
+                            paymentList = invoice.getPayments();
+                        }else{
+                            invoice = new Invoice();
+                            paymentList = new ArrayList<>();
+                        }
+                        invoice.setAmount(bill.getAmount());
+                        invoice.setExitTime(bill.getExitDate());
+                        invoice.setTicket(bill.getTicket());
+
+                        int amountToBePaid = 0;
+                        for(int i=0;i<noOfPayments;i++){
+                            System.out.println("Enter '0' for Cash and '1' for online and '2 for Coupon':");
+                            Scanner s2 = new Scanner(System.in);
+                            int option = s2.nextInt();
+                            Payment payment = new Payment();
+                            payment.setAmount(bill.getAmount());
+                            payment.setDate(bill.getExitDate());
+
+                            if(option == 0){
+                                payment.setPaymentType(PaymentType.CASH);
+                            }else if(option == 1){
+                                payment.setPaymentType(PaymentType.ONLINE);
+                            }else if(option == 2){
+                                payment.setPaymentType(PaymentType.COUPON);
+                            }else{
+                                System.out.println("Invalid option, try again");
+                                continue;
+                            }
+
+                            System.out.println("Enter the amount for this payment:");
+                            int amt = s2.nextInt();
+                            amountToBePaid+= amt;
+                            payment.setAmount(amt);
+                            payment.setId(paymentRepository.save(payment).getId());
+                            paymentList.add(payment);
+                            bill.setAmountTobepaid(bill.getAmountTobepaid()-amt);
+
+                        }
+
+                        if(bill.getAmountTobepaid()==0){
+                            System.out.println("Total amount is paid, Invoice is generated");
+                            ticket.getParkingSlot().setParkingSpotStatus(ParkingSpotStatus.EMPTY);
+                            System.out.println("----------------------------------------------------");
+                            System.out.println("Total amount paid: "+bill.getAmount());
+                            System.out.println("Total number of payments: "+paymentList.size());
+                            for(Payment payment : paymentList){
+                                System.out.println("----");
+                                System.out.println("Payment id: "+payment.getId());
+                                System.out.println("Amount paid: "+payment.getAmount());
+                                System.out.println("Payment mode: "+payment.getPaymentType());
+
+                            }
+
+                        }else{
+                            System.out.println("Total amount is not paid");
+
+                        }
+
+                        invoice.setPayments(paymentList);
+                        invoice.setId(invoiceRepository.save(invoice).getId());
+                        bill.setInvoice(invoice);
+
+                    }else{
+                        System.out.println("Something went wrong");
+                    }
                 }
             }
 
